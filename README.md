@@ -22,14 +22,6 @@
 	$ pip install pillow
 	```
 
-- numpy
-
-	Install using pip:
-
-	```
-	$ pip install numpy
-	```
-
 ## Usage
 
 ```
@@ -39,7 +31,7 @@ $ python img-viewer.py <image file name>
 For example:
 
 ```
-$ python img-viewer.py dog.jpg
+$ python img-viewer.py dog.jpg -R 25
 ```
 
 ## Tutorial
