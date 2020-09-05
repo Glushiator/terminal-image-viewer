@@ -1,6 +1,7 @@
-import sys
-import numpy as np
-from PIL import Image
+#!/usr/bin/env python3
+
+import argparse
+import PIL.Image
 
 
 def get_ansi_color_code(r, g, b):
@@ -14,30 +15,30 @@ def get_ansi_color_code(r, g, b):
 
 
 def get_color(r, g, b):
-    return "\x1b[48;5;{}m \x1b[0m".format(int(get_ansi_color_code(r,g,b)))
+    return "\x1b[48;5;{}m \x1b[0m".format(int(get_ansi_color_code(r, g, b)))
 
 
-def show_image(img_path):
-	try:
-		img = Image.open(img_path)
-	except FileNotFoundError:
-		exit('Image not found.')
+def show_image(img_path, rows, aspect):
+    img = PIL.Image.open(img_path)
 
-	h = 100
-	w = int((img.width / img.height) * h)
+    columns = int((aspect * rows * img.width) / img.height)
+    img: PIL.Image.Image = img.resize((columns, rows), PIL.Image.ANTIALIAS)
 
-	img = img.resize((w,h), Image.ANTIALIAS)
-	img_arr = np.asarray(img)
-	h,w,c = img_arr.shape
+    for row in range(rows):
+        for col in range(columns):
+            pix = img.getpixel((col, row))
+            print(get_color(pix[0], pix[1], pix[2]), sep='', end='')
+        print()
 
-	for x in range(h):
-	    for y in range(w):
-	        pix = img_arr[x][y]
-	        print(get_color(pix[0], pix[1], pix[2]), sep='', end='')
-	    print()
+
+def _main():
+    _arg_parser = argparse.ArgumentParser(description="console image view utility")
+    _arg_parser.add_argument('image', help="image file")
+    _arg_parser.add_argument('--rows', '-R', help='rows to use', type=int, default=25)
+    _arg_parser.add_argument('--aspect', '-A', help='console "pixel" aspect h/w', type=float, default=2.8)
+    _args = _arg_parser.parse_args()
+    show_image(_args.image, _args.rows, _args.aspect)
 
 
 if __name__ == '__main__':
-	if len(sys.argv) > 1:
-		img_path = sys.argv[1]
-		show_image(img_path)
+    _main()
